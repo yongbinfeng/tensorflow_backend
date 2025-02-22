@@ -77,7 +77,8 @@ elseif(${TRITON_TENSORFLOW_VERSION} EQUAL "2")
   set(TRITON_TENSORFLOW_BACKEND_LIBNAME triton_tensorflow)
   set(TRITON_TENSORFLOW_BACKEND_INSTALLDIR ${CMAKE_INSTALL_PREFIX}/backends/tensorflow)
   if(RHEL_BUILD)
-    set(TRITON_TENSORFLOW_PYTHON_PATH "/opt/_internal/cpython-3.12.1/lib/python3.12/site-packages/tensorflow")
+    #set(TRITON_TENSORFLOW_PYTHON_PATH "/opt/_internal/cpython-3.12.1/lib/python3.12/site-packages/tensorflow")
+    set(TRITON_TENSORFLOW_PYTHON_PATH "/opt/python/lib/python3.12/site-packages/tensorflow")
   else()
     set(TRITON_TENSORFLOW_PYTHON_PATH "/usr/local/lib/python3.12/dist-packages/tensorflow")
   endif(RHEL_BUILD)
@@ -137,13 +138,11 @@ if (${TRITON_TENSORFLOW_DOCKER_BUILD})
     OUTPUT
       ${TRITON_TENSORFLOW_CC_LIBNAME}.${TRITON_TENSORFLOW_VERSION}
       ${TRITON_TENSORFLOW_FW_LIBNAME}.${TRITON_TENSORFLOW_VERSION}
-      LICENSE.tensorflow
-    COMMAND docker pull ${TRITON_TENSORFLOW_DOCKER_IMAGE}
+    #COMMAND docker pull ${TRITON_TENSORFLOW_DOCKER_IMAGE}
     COMMAND docker rm tensorflow_backend_tflib || echo "error ignored..." || true
     COMMAND docker create --name tensorflow_backend_tflib ${TRITON_TENSORFLOW_DOCKER_IMAGE}
     COMMAND docker cp -L tensorflow_backend_tflib:${TRITON_TENSORFLOW_PYTHON_PATH}/${TRITON_TENSORFLOW_CC_LIBNAME}.${TRITON_TENSORFLOW_VERSION} ${TRITON_TENSORFLOW_CC_LIBNAME}.${TRITON_TENSORFLOW_VERSION}
     COMMAND docker cp tensorflow_backend_tflib:${TRITON_TENSORFLOW_PYTHON_PATH}/${TRITON_TENSORFLOW_FW_LIBNAME}.${TRITON_TENSORFLOW_VERSION} ${TRITON_TENSORFLOW_FW_LIBNAME}.${TRITON_TENSORFLOW_VERSION}
-    COMMAND docker cp tensorflow_backend_tflib:/opt/tensorflow/tensorflow-source/LICENSE LICENSE.tensorflow
     COMMAND docker rm tensorflow_backend_tflib
 
     COMMAND docker stop tensorflow_backend_deps || echo "error ignored..." || true
@@ -288,7 +287,6 @@ if (${TRITON_TENSORFLOW_DOCKER_BUILD})
     FILES
       ${CMAKE_CURRENT_BINARY_DIR}/${TRITON_TENSORFLOW_CC_LIBNAME}.${TRITON_TENSORFLOW_VERSION}
       ${CMAKE_CURRENT_BINARY_DIR}/${TRITON_TENSORFLOW_FW_LIBNAME}.${TRITON_TENSORFLOW_VERSION}
-      ${CMAKE_CURRENT_BINARY_DIR}/LICENSE.tensorflow
     DESTINATION ${TRITON_TENSORFLOW_BACKEND_INSTALLDIR}
   )
   install(
